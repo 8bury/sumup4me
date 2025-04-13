@@ -94,7 +94,7 @@ func registerDaos(transcriptionService openai.AudioTranscriptionService, sumupSe
 func registerServices() {
 	log.Println("Registrando serviços...")
 	transcribingService = service.NewTranscribingService(transcribingDao)
-	sumupService = service.NewSumupService(sumupDao)
+	sumupService = service.NewSumupService(sumupDao, transcribingService)
 	log.Println("Serviços registrados com sucesso")
 }
 func registerControllers(api *echo.Group) {

@@ -2,10 +2,8 @@ package controller
 
 import (
 	"log"
-	"mime/multipart"
-	"path/filepath"
-	"strings"
 
+	"github.com/8bury/sumup4me/internal/audio"
 	"github.com/8bury/sumup4me/internal/model"
 	"github.com/8bury/sumup4me/internal/service"
 	"github.com/labstack/echo/v4"
@@ -37,7 +35,7 @@ func (c *TranscribingController) TranscribeAudio(ctx echo.Context) error {
 	}
 	log.Printf("Arquivo recebido: %s (%d bytes, tipo: %s)", file.Filename, file.Size, file.Header.Get("Content-Type"))
 
-	if !c.isAnAudioFile(file) {
+	if !audio.IsAnAudioFile(file) {
 		log.Printf("Tipo de arquivo inválido: %s", file.Header.Get("Content-Type"))
 		return ctx.JSON(400, model.Error{Message: "Invalid file type"})
 	}
@@ -55,33 +53,3 @@ func (c *TranscribingController) TranscribeAudio(ctx echo.Context) error {
 	return ctx.JSON(200, transcription)
 }
 
-func (c *TranscribingController) isAnAudioFile(file *multipart.FileHeader) bool {
-	// Tipos permitidos por Content-Type
-	allowedTypes := map[string]bool{
-		"audio/mpeg": true, // .mp3
-		"audio/wav":  true, // .wav
-		"audio/m4a":  true, // .m4a
-	}
-
-	// Verificar Content-Type
-	contentType := file.Header.Get("Content-Type")
-	if _, ok := allowedTypes[contentType]; ok {
-		log.Printf("Arquivo validado pelo Content-Type: %s", contentType)
-		return true
-	}
-
-	// Verificar extensão do arquivo como fallback
-	allowedExtensions := map[string]bool{
-		".mp3": true,
-		".wav": true,
-		".m4a": true,
-	}
-
-	ext := strings.ToLower(filepath.Ext(file.Filename))
-	if _, ok := allowedExtensions[ext]; ok {
-		log.Printf("Arquivo validado pela extensão: %s", ext)
-		return true
-	}
-
-	return false
-}

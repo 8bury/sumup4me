@@ -25,7 +25,7 @@ func (s *SumupDao) SummarizeText(text string) (string, error) {
 	summarizePrompt := genai.Text("Faça que o seguinte texto seja resumido e organizado em tópicos no idioma original do texto : " + text)
 	log.Println("Enviando solicitação para o modelo de IA")
 
-	summary, err := s.sumupService.GenerativeModel("gemini-2.5-pro-exp-03-25").GenerateContent(context.Background(), summarizePrompt)
+	summary, err := s.sumupService.GenerativeModel("gemini-2.0-flash").GenerateContent(context.Background(), summarizePrompt)
 	if err != nil {
 		log.Printf("Erro ao gerar conteúdo com a IA: %v", err)
 		return "", err
