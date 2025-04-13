@@ -29,10 +29,6 @@ func (d *TranscribingDao) TranscribeAudio(file io.Reader) (*model.Transcription,
 		Model:                  "whisper-1",
 		ResponseFormat:         openai.AudioResponseFormatJSON,
 		Language:               param.NewOpt("pt"),
-		Prompt:                 param.Opt[string]{},
-		Temperature:            param.Opt[float64]{},
-		Include:                []openai.TranscriptionInclude{},
-		TimestampGranularities: []string{},
 	}
 
 	log.Println("Configuração de transcrição: model=whisper-1, language=pt, format=JSON")

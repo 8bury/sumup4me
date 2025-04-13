@@ -23,7 +23,6 @@ func NewTranscribingController(api *echo.Group, transcribingService *service.Tra
 	}
 
 	api.POST("/transcribe", controller.TranscribeAudio)
-	log.Println("Rota POST /v1/transcribe registrada")
 
 	return controller
 }
