@@ -36,7 +36,7 @@ func registerDependencies(api *echo.Echo, transcriptionService openai.AudioTrans
 	log.Println("Dependências registradas com sucesso")
 }
 
-func ConfigureApi(api *echo.Echo) {
+func LoadEnvVariables() {
 	log.Println("Carregando variáveis de ambiente...")
 	err := godotenv.Load()
 	if err != nil {
@@ -44,7 +44,10 @@ func ConfigureApi(api *echo.Echo) {
 	} else {
 		log.Println("Arquivo .env carregado com sucesso")
 	}
+}
 
+
+func InitOpenAIClient() openai.AudioTranscriptionService {
 	apiKeyOpenAI := os.Getenv("OPENAI_API_KEY")
 	if apiKeyOpenAI == "" {
 		log.Fatal("OPENAI_API_KEY environment variable is not set")
@@ -61,14 +64,10 @@ func ConfigureApi(api *echo.Echo) {
 	}
 
 	log.Println("Iniciando serviço de transcrição OpenAI...")
-	transcriptionService := openai.NewAudioTranscriptionService(openAIOption.WithAPIKey(
-		apiKeyOpenAI,
-	),
-		openAIOption.WithBaseURL(
-			baseUrlOpenAi,
-		))
-	log.Println("Serviço de transcrição OpenAI inicializado")
+	return openai.NewAudioTranscriptionService(openAIOption.WithAPIKey(apiKeyOpenAI), openAIOption.WithBaseURL(baseUrlOpenAi))
+}
 
+func InitGeminiClient() *genai.Client {
 	apiKeyGemini := os.Getenv("GEMINI_API_KEY")
 	if apiKeyGemini == "" {
 		log.Fatal("GEMINI_API_KEY environment variable is not set")
@@ -81,6 +80,14 @@ func ConfigureApi(api *echo.Echo) {
 		log.Fatalf("Erro ao criar cliente Gemini: %v", err)
 	}
 	log.Println("Cliente Gemini criado com sucesso")
+	return sumupService
+}
+
+func ConfigureApi(api *echo.Echo) {
+	LoadEnvVariables()
+
+	transcriptionService := InitOpenAIClient()
+	sumupService := InitGeminiClient()
 
 	registerDependencies(api, transcriptionService, sumupService)
 }
