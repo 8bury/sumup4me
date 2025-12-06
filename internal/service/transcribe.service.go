@@ -10,18 +10,18 @@ import (
 	"github.com/8bury/sumup4me/internal/model"
 )
 
-type TranscribingService struct {
-	TranscribingDao *dao.TranscribingDao
+type TranscribeService struct {
+	TranscribeDao *dao.TranscribeDao
 }
 
-func NewTranscribingService(transcribingDao *dao.TranscribingDao) *TranscribingService {
+func NewTranscribeService(transcribeDao *dao.TranscribeDao) *TranscribeService {
 	log.Println("Inicializando TranscribingService")
-	return &TranscribingService{
-		TranscribingDao: transcribingDao,
+	return &TranscribeService{
+		TranscribeDao: transcribeDao,
 	}
 }
 
-func (transcribingService *TranscribingService) TranscribeAudio(file *multipart.FileHeader) (*model.Transcription, error) {
+func (s *TranscribeService) TranscribeAudio(file *multipart.FileHeader) (*model.Transcription, error) {
 	log.Printf("Processando arquivo de áudio: %s", file.Filename)
 
 	src, err := file.Open()
@@ -49,12 +49,12 @@ func (transcribingService *TranscribingService) TranscribeAudio(file *multipart.
 	log.Println("Conteúdo copiado para arquivo temporário com sucesso")
 
 	if _, err := tempFile.Seek(0, 0); err != nil {
-        log.Printf("Erro ao reposicionar ponteiro do arquivo temporário: %v", err)
-        return nil, err
-    }
+		log.Printf("Erro ao reposicionar ponteiro do arquivo temporário: %v", err)
+		return nil, err
+	}
 
 	log.Println("Enviando arquivo para transcrição...")
-	transcription, err := transcribingService.TranscribingDao.TranscribeAudio(tempFile)
+	transcription, err := s.TranscribeDao.TranscribeAudio(tempFile)
 	if err != nil {
 		log.Printf("Erro retornado pelo serviço de transcrição: %v", err)
 		return nil, err

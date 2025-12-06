@@ -8,15 +8,17 @@ import (
 )
 
 type SumupService struct {
-	sumupDao            *dao.SumupDao
-	transcribingService *TranscribingService
+	sumupDao          *dao.SumupDao
+	transcribeService *TranscribeService
+	downloadService *DownloadService
 }
 
-func NewSumupService(sumupDao *dao.SumupDao, transcribingService *TranscribingService) *SumupService {
+func NewSumupService(sumupDao *dao.SumupDao, transcribeService *TranscribeService, downloadService *DownloadService) *SumupService {
 	log.Println("Inicializando SumupService")
 	return &SumupService{
-		sumupDao:            sumupDao,
-		transcribingService: transcribingService,
+		sumupDao:          sumupDao,
+		transcribeService: transcribeService,
+		downloadService: downloadService,
 	}
 }
 
@@ -34,7 +36,7 @@ func (s *SumupService) SummarizeText(text string) (string, error) {
 func (s *SumupService) SumupAudio(file *multipart.FileHeader) (string, error) {
 	log.Println("Iniciando transcrição e resumo do áudio")
 
-	transcription, err := s.transcribingService.TranscribeAudio(file)
+	transcription, err := s.transcribeService.TranscribeAudio(file)
 	if err != nil {
 		log.Printf("Erro ao transcrever áudio: %v", err)
 		return "", err
@@ -47,6 +49,28 @@ func (s *SumupService) SumupAudio(file *multipart.FileHeader) (string, error) {
 		return "", err
 	}
 
+	log.Println("Resumo concluído com sucesso")
+	return summary, nil
+}
+
+func (s *SumupService) SumupVideo(url string) (string, error) {
+	log.Println("Iniciando transcrição e resumo do vídeo")
+
+	videoAudio, err := s.downloadService.DownloadVideoAudioFromUrl(url)
+
+	transcription, err := s.transcribeService.TranscribeAudio(videoAudio)
+	if err != nil {
+		log.Printf("Erro ao transcrever vídeo: %v", err)
+		return "", err
+	}
+
+	log.Printf("Transcrição concluída com sucesso. Iniciando resumo do texto")
+
+	summary, err := s.SummarizeText(transcription.Transcription)
+	if err != nil {
+		log.Printf("Erro ao resumir texto: %v", err)
+		return "", err
+	}
 	log.Println("Resumo concluído com sucesso")
 	return summary, nil
 }

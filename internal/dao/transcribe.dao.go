@@ -10,25 +10,25 @@ import (
 	"github.com/openai/openai-go/packages/param"
 )
 
-type TranscribingDao struct {
+type TranscribeDao struct {
 	cliente openai.AudioTranscriptionService
 }
 
-func NewTranscribingDao(cliente openai.AudioTranscriptionService) *TranscribingDao {
+func NewTranscribingDao(cliente openai.AudioTranscriptionService) *TranscribeDao {
 	log.Println("Inicializando TranscribingDao")
-	return &TranscribingDao{
+	return &TranscribeDao{
 		cliente: cliente,
 	}
 }
 
-func (d *TranscribingDao) TranscribeAudio(file io.Reader) (*model.Transcription, error) {
+func (d *TranscribeDao) TranscribeAudio(file io.Reader) (*model.Transcription, error) {
 	log.Println("Iniciando transcrição de áudio usando a API da OpenAI")
 
 	request := openai.AudioTranscriptionNewParams{
-		File:                   file,
-		Model:                  "whisper-1",
-		ResponseFormat:         openai.AudioResponseFormatJSON,
-		Language:               param.NewOpt("pt"),
+		File:           file,
+		Model:          "whisper-1",
+		ResponseFormat: openai.AudioResponseFormatJSON,
+		Language:       param.NewOpt("pt"),
 	}
 
 	log.Println("Configuração de transcrição: model=whisper-1, language=pt, format=JSON")

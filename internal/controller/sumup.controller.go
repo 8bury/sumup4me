@@ -56,12 +56,31 @@ func (s *SumupController) SumupAudio(ctx echo.Context) error {
 	}
 
 	log.Printf("Processando arquivo de áudio: %s", file.Filename)
-	transcription, err := s.sumupService.SumupAudio(file)
+	summary, err := s.sumupService.SumupAudio(file)
 	if err != nil {
 		log.Printf("Erro ao processar áudio: %v", err)
 		return ctx.JSON(500, map[string]string{"error": "Erro ao processar áudio"})
 	}
 
 	log.Println("Áudio processado com sucesso")
-	return ctx.JSON(200, transcription)
+	return ctx.JSON(200, summary)
+}
+
+func (s *SumupController) SumupVideo(ctx echo.Context) error {
+	log.Println("Recebida requisicao POST /v1/sumup/video")
+	url := ctx.QueryParam("url")
+	if url == "" {
+		log.Println("Erro ao obter URL do vídeo")
+		return ctx.JSON(400, map[string]string{"error": "URL do vídeo não fornecida"})
+	}
+	log.Printf("Processando vídeo da URL: %s", url)
+	summary, err := s.sumupService.SumupVideo(url)
+	if err != nil {
+		log.Printf("Erro ao processar vídeo: %v", err)
+
+		return ctx.JSON(500, map[string]string{"error": "Erro ao processar vídeo"})
+
+	}
+	log.Println("Vídeo processado com sucesso")
+	return ctx.JSON(200, summary)
 }

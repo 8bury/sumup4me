@@ -9,15 +9,15 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type TranscribingController struct {
-	transcribingService *service.TranscribingService
+type TranscribeController struct {
+	transcribingService *service.TranscribeService
 }
 
-func NewTranscribingController(api *echo.Group, transcribingService *service.TranscribingService) *TranscribingController {
+func NewTranscribingController(api *echo.Group, transcribeService *service.TranscribeService) *TranscribeController {
 	log.Println("Inicializando TranscribingController")
 
-	controller := &TranscribingController{
-		transcribingService: transcribingService,
+	controller := &TranscribeController{
+		transcribingService: transcribeService,
 	}
 
 	api.POST("/transcribe", controller.TranscribeAudio)
@@ -25,7 +25,7 @@ func NewTranscribingController(api *echo.Group, transcribingService *service.Tra
 	return controller
 }
 
-func (c *TranscribingController) TranscribeAudio(ctx echo.Context) error {
+func (c *TranscribeController) TranscribeAudio(ctx echo.Context) error {
 	log.Println("Recebida requisição POST /v1/transcribe")
 
 	file, err := ctx.FormFile("audio")
@@ -52,4 +52,3 @@ func (c *TranscribingController) TranscribeAudio(ctx echo.Context) error {
 	log.Println("Enviando resposta com transcrição")
 	return ctx.JSON(200, transcription)
 }
-

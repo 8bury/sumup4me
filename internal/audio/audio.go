@@ -11,17 +11,20 @@ func IsAnAudioFile(file *multipart.FileHeader) bool {
 	const (
 		contentTypeHeader = "Content-Type"
 	)
-
 	allowedTypes := map[string]struct{}{
 		"audio/mpeg": {},
 		"audio/wav":  {},
 		"audio/m4a":  {},
+		"audio/mp4": {},
+		"audio/aac":  {},
 	}
 
 	allowedExtensions := map[string]struct{}{
 		".mp3": {},
 		".wav": {},
 		".m4a": {},
+		".mp4": {},
+		".aac": {},
 	}
 
 	contentType := file.Header.Get(contentTypeHeader)

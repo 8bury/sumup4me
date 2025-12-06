@@ -17,9 +17,9 @@ import (
 )
 
 var (
-	transcribingController *controller.TranscribingController
-	transcribingService    *service.TranscribingService
-	transcribingDao        *dao.TranscribingDao
+	transcribingController *controller.TranscribeController
+	transcribingService    *service.TranscribeService
+	transcribingDao        *dao.TranscribeDao
 
 	sumupController *controller.SumupController
 	sumupService    *service.SumupService
@@ -45,7 +45,6 @@ func LoadEnvVariables() {
 		log.Println("Arquivo .env carregado com sucesso")
 	}
 }
-
 
 func InitOpenAIClient() openai.AudioTranscriptionService {
 	apiKeyOpenAI := os.Getenv("OPENAI_API_KEY")
@@ -100,7 +99,7 @@ func registerDaos(transcriptionService openai.AudioTranscriptionService, sumupSe
 }
 func registerServices() {
 	log.Println("Registrando serviços...")
-	transcribingService = service.NewTranscribingService(transcribingDao)
+	transcribingService = service.NewTranscribeService(transcribingDao)
 	sumupService = service.NewSumupService(sumupDao, transcribingService)
 	log.Println("Serviços registrados com sucesso")
 }
